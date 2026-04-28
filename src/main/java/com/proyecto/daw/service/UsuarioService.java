@@ -14,7 +14,6 @@ public class UsuarioService {
     @Autowired
     private UsuarioRepository usuarioRepository;
 
-
     public List<Usuario> findAll() {
         return usuarioRepository.findAll();
     }
@@ -56,5 +55,11 @@ public class UsuarioService {
 
             return usuarioRepository.save(usuarioExistente);
         }).orElse(null);
+    }
+
+    public void borrarUsuario(int id){
+        Usuario usuario = usuarioRepository.findById(id);
+        if (usuario != null)
+            usuarioRepository.delete(usuario);
     }
 }

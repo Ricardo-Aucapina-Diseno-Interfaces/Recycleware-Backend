@@ -133,4 +133,17 @@ public class UsuarioController {
         response.put("mensaje", "Contraseña actualizada correctamente");
         return ResponseEntity.ok(response);
     }
+
+    @DeleteMapping("/{id}")
+    public ResponseEntity<Map<String, String>> deleteUsuario(@PathVariable int id){
+        Usuario usuario = usuarioService.findById(id);
+
+        if (usuario == null){
+            return ResponseEntity.status(HttpStatus.NOT_FOUND)
+                    .body(Map.of("error", "Usuario no encontrado con ID: " + id));
+        }
+
+        usuarioService.borrarUsuario(id);
+        return ResponseEntity.ok(Map.of("mensaje", "Usuario eliminado con éxito"));
+    }
 }
