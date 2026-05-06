@@ -84,4 +84,19 @@ public class RequestService {
     public long countEntregadas() {
         return requestRepository.countByStateName("Entregada");
     }
+
+    public void delete(int id){
+        Request solicitud = requestRepository.findById(id).orElse(null);
+        if (solicitud == null)
+            throw new IllegalArgumentException("Error: No se puede eliminar. La solicitud con ID " + id + " no existe.");
+        requestRepository.delete(solicitud);
+    }
+
+    public Request updateSolicitud(int id, String nuevoMotivo){
+        Request solicitud = requestRepository.findById(id).orElse(null);
+        if (solicitud == null)
+            throw new IllegalArgumentException("Error: No se ha encontrado la solicitud con el ID " + id);
+        solicitud.setReason(nuevoMotivo);
+        return requestRepository.save(solicitud);
+    }
 }
