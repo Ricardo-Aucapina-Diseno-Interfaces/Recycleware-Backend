@@ -114,4 +114,30 @@ public class DonationService {
 
         return respuesta;
     }
+
+    @Transactional
+    public Donation actualizar(Integer id, Donation detallesNuevos){
+        Donation donacionExistente = donationRepository.findById(id)
+                .orElseThrow(()-> new ResourceNotFoundException("Donación no encontrada con ID: " + id));
+        if (detallesNuevos.getCantidadProductos() != null) {
+            donacionExistente.setCantidadProductos(detallesNuevos.getCantidadProductos());
+        }
+        if (detallesNuevos.getDescripcion() != null) {
+            donacionExistente.setDescripcion(detallesNuevos.getDescripcion());
+        }
+        if (detallesNuevos.getPeso() != null) {
+            donacionExistente.setPeso(detallesNuevos.getPeso());
+        }
+        if (detallesNuevos.getDonante() != null && detallesNuevos.getDonante().getId() != null) {
+            Usuario nuevoDonante = UsuarioRepository.findById(detallesNuevos.getDonante().getId())
+                    .orElseThrow(() -> new ResourceNotFoundException("Usuario donante no encontrado"));
+            donacionExistente.setDonante(nuevoDonante);
+        }
+        if (detallesNuevos.getEstado() != null && detallesNuevos.getEstado().getId() != null) {
+            DonationState nuevoEstado = DonationStateRepository.findById(detallesNuevos.getEstado().getId())
+                    .orElseThrow(() -> new ResourceNotFoundException("Estado de donación no encontrado"));
+            donacionExistente.setEstado(nuevoEstado);
+        }
+        return donationRepository.save(donacionExistente);
+    }
 }

@@ -57,4 +57,18 @@ public class DonationController {
     public void delete(@PathVariable Integer id) {
         donationService.delete(id);
     }
+
+    @PatchMapping("/{id}")
+    public org.springframework.http.ResponseEntity<?> updateDonation(@PathVariable Integer id, @RequestBody Donation detallesNuevos){
+        try {
+            Donation donacionActualizada = donationService.actualizar(id, detallesNuevos);
+            return org.springframework.http.ResponseEntity.ok(donacionActualizada);
+        } catch (com.proyecto.daw.exception.ResourceNotFoundException e) {
+            return org.springframework.http.ResponseEntity.status(org.springframework.http.HttpStatus.NOT_FOUND)
+                    .body(java.util.Map.of("error", e.getMessage()));
+        } catch (Exception e) {
+            return org.springframework.http.ResponseEntity.status(org.springframework.http.HttpStatus.INTERNAL_SERVER_ERROR)
+                    .body(java.util.Map.of("error", "Error interno al actualizar la donación."));
+        }
+    }
 }
