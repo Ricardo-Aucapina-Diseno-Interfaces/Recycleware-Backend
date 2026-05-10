@@ -1,6 +1,7 @@
 package com.proyecto.daw.service;
 
 import java.util.List;
+import java.util.Map;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -11,6 +12,7 @@ import com.proyecto.daw.model.RequestState;
 import com.proyecto.daw.model.Usuario;
 import com.proyecto.daw.repository.RequestRepository;
 import com.proyecto.daw.repository.RequestStateRepository;
+import org.springframework.transaction.annotation.Transactional;
 
 @Service
 public class RequestService {
@@ -92,11 +94,48 @@ public class RequestService {
         requestRepository.delete(solicitud);
     }
 
-    public Request updateSolicitud(int id, String nuevoMotivo){
-        Request solicitud = requestRepository.findById(id).orElse(null);
-        if (solicitud == null)
-            throw new IllegalArgumentException("Error: No se ha encontrado la solicitud con el ID " + id);
-        solicitud.setReason(nuevoMotivo);
-        return requestRepository.save(solicitud);
+    @Transactional
+    public Request updateSolicitud(int id, Map<String, Object> detallesNuevos){
+        Request solicitudExistente = requestRepository.findById(id).orElseThrow(() -> new IllegalArgumentException("Error: No se encontro la solicitud con el ID " + id));
+
+        if (detallesNuevos.containsKey("reason"))
+            solicitudExistente.setReason((String) detallesNuevos.get("reason"));
+
+        if (detallesNuevos.get("applicant") instanceof Map<?,?> datosSolicitante) {
+            if (datosSolicitante.get("id") != null) {
+                int idSolicitante = Integer.parseInt(datosSolicitante.get("id").toString());
+                Usuario nuevoSolicitante = UsuarioService.findById(idSolicitante);
+                if (nuevoSolicitante == null)
+                    throw new IllegalArgumentException("Usuario solicitante no encontrado.");
+                solicitudExistente.setApplicant(nuevoSolicitante);
+            }
+        }
+
+        if (detallesNuevos.get("product") instanceof Map<?,?> datosProducto) {
+            if (datosProducto.get("id") != null) {
+                int idProduct = Integer.parseInt(datosProducto.get("id").toString());
+                Producto nuevoProducto = productoService.findById(idProduct);
+                if (nuevoProducto == null) {
+                    throw new IllegalArgumentException("Producto no encontrado.");
+                }
+                solicitudExistente.setProduct(nuevoProducto);
+            }
+        }
+
+        if (detallesNuevos.get("state") instanceof Map<?,?> datosEstado) {
+            if (datosEstado.get("id") != null) {
+                int idState = Integer.parseInt(datosEstado.get("id").toString());
+                RequestState nuevoEstado = requestStateRepository.findById(idState)
+                        .orElseThrow(() -> new IllegalArgumentException("Estado de solicitud no encontrado."));
+
+                if (nuevoEstado.getName().equals("Aprobada") || nuevoEstado.getName().equals("Entregada")) {
+                    productoService.marcarProductoNoDisponibleById(solicitudExistente.getProduct().getId());
+                }
+
+                solicitudExistente.setState(nuevoEstado);
+            }
+        }
+
+        return requestRepository.save(solicitudExistente);
     }
 }

@@ -117,14 +117,10 @@ public class RequestController {
         }
     }
 
-    @PutMapping("/{id}")
-    public ResponseEntity<?> updateRequest(@PathVariable("id") int id, @RequestBody Map<String, String> body){
+    @PatchMapping("/{id}")
+    public ResponseEntity<?> updateRequest(@PathVariable("id") int id, @RequestBody Map<String, Object> detallesNuevos){
         try{
-            String nuevoMotivo = body.get("motivo");
-            if (nuevoMotivo == null || nuevoMotivo.trim().isEmpty())
-                return ResponseEntity.status(HttpStatus.BAD_REQUEST)
-                        .body(Map.of("error", "El campo 'motivo' es obligatorio."));
-            Request solicitudActualizada = requestService.updateSolicitud(id, nuevoMotivo);
+            Request solicitudActualizada = requestService.updateSolicitud(id, detallesNuevos);
             return ResponseEntity.ok(solicitudActualizada);
         } catch (IllegalArgumentException e) {
             return ResponseEntity.status(HttpStatus.NOT_FOUND).body(Map.of("error", e.getMessage()));
