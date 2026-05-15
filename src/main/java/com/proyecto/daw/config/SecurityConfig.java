@@ -43,7 +43,7 @@ public class SecurityConfig {
                         .requestMatchers("/solicitudes/todas", "/usuario/count").hasRole("ADMIN")
                         .requestMatchers(HttpMethod.GET, "/usuario", "/comunidad/resenas/todas").hasRole("ADMIN")
                         .requestMatchers(HttpMethod.PUT, "/solicitudes/**", "/donaciones/**").hasRole("ADMIN")
-                        .requestMatchers(HttpMethod.PATCH, "/donaciones/**", "/solicitudes/**", "/comunidad/resenas/**").hasRole("ADMIN")
+                        .requestMatchers(HttpMethod.PATCH, "/donaciones/**", "/solicitudes/**", "/comunidad/resenas/**", "/usuarios/**").hasRole("ADMIN")
                         .requestMatchers(HttpMethod.DELETE, "/donaciones/**", "/solicitudes/**", "/usuario/**").hasRole("ADMIN")
                         
                      
@@ -88,7 +88,7 @@ public class SecurityConfig {
         CorsConfiguration configuration = new CorsConfiguration();
         
         configuration.setAllowedOriginPatterns(Arrays.asList("http://localhost*"));
-        configuration.setAllowedMethods(Arrays.asList("GET", "POST", "PUT", "DELETE", "OPTIONS"));
+        configuration.setAllowedMethods(Arrays.asList("GET", "POST", "PUT", "DELETE", "PATCH", "OPTIONS"));
         configuration.setAllowedHeaders(Arrays.asList("Authorization", "Content-Type"));
         configuration.setAllowCredentials(true);
         UrlBasedCorsConfigurationSource source = new UrlBasedCorsConfigurationSource();

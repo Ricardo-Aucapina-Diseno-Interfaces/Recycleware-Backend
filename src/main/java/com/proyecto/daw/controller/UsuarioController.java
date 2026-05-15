@@ -112,6 +112,18 @@ public class UsuarioController {
         return ResponseEntity.ok(usuarioGuardado);
     }
 
+    @PatchMapping("/{id}")
+    public ResponseEntity<Usuario> actualizarUsuarioParcial(@PathVariable int id, @RequestBody Usuario usuarioActualizado) {
+        usuarioActualizado.setId(id);
+
+        Usuario usuarioGuardado = usuarioService.actualizarUsuario(usuarioActualizado);
+
+        if (usuarioGuardado == null) {
+            return ResponseEntity.notFound().build();
+        }
+        return ResponseEntity.ok(usuarioGuardado);
+    }
+
     @PostMapping("/cambiar-password")
     public ResponseEntity<Map<String, Object>> cambiarPassword(@RequestBody Map<String, String> datos) {
         Map<String, Object> response = new HashMap<>();

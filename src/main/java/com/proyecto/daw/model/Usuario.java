@@ -44,4 +44,7 @@ public class Usuario {
     @Enumerated(EnumType.STRING)
     @Column(nullable = false, length = 20)
     private Rol rol;
+
+    @Column(name = "estado")
+    private String estado = "PENDIENTE";
 }

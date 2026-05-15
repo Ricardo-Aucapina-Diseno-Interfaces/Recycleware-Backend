@@ -52,6 +52,12 @@ public class UsuarioService {
             usuarioExistente.setNombreContacto(datosNuevos.getNombreContacto());
             usuarioExistente.setRazonSocial(datosNuevos.getRazonSocial());
 
+            if (datosNuevos.getEstado() != null) {
+                usuarioExistente.setEstado(datosNuevos.getEstado());
+            }
+            if (datosNuevos.getRol() != null) {
+                usuarioExistente.setRol(datosNuevos.getRol());
+            }
 
             return usuarioRepository.save(usuarioExistente);
         }).orElse(null);

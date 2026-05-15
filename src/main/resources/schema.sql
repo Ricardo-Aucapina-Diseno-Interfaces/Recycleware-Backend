@@ -23,6 +23,7 @@ CREATE TABLE usuarios (
     razon_social    VARCHAR(80) DEFAULT NULL,
     nombre_contacto VARCHAR(80) DEFAULT NULL,
     rol             VARCHAR(20) NOT NULL DEFAULT 'PARTICULAR',
+    estado          VARCHAR(20) NOT NULL DEFAULT 'PENDIENTE',
     PRIMARY KEY (id)
 );
 
