@@ -67,8 +67,8 @@ public class SecurityConfig {
                      
                         .anyRequest().authenticated())
 
-                .headers(headers -> headers.frameOptions(frame -> frame.sameOrigin()))
-                .httpBasic(Customizer.withDefaults());
+                .headers(headers -> headers.frameOptions(frame -> frame.sameOrigin()));
+                //.httpBasic(Customizer.withDefaults());
 
         return http.build();
     }

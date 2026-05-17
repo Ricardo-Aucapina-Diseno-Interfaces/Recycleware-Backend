@@ -4,10 +4,18 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import jakarta.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpSession;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.authentication.AuthenticationManager;
+import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContext;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.crypto.password.PasswordEncoder;
+import org.springframework.security.web.context.HttpSessionSecurityContextRepository;
 import org.springframework.web.bind.annotation.*;
 
 import com.proyecto.daw.model.Usuario;
@@ -24,6 +32,9 @@ public class UsuarioController {
 
     @Autowired
     private PasswordEncoder passwordEncoder;
+
+    @Autowired
+    private AuthenticationManager authenticationManager;
 
     @GetMapping("")
     public List<Usuario> showUsuarios() {
@@ -82,23 +93,30 @@ public class UsuarioController {
     }
 
     @PostMapping("/login")
-    public ResponseEntity<Map<String, Object>> loginUsuario(@RequestBody Map<String, String> credenciales) {
+    public ResponseEntity<Map<String, Object>> loginUsuario(@RequestBody Map<String, String> credenciales, HttpServletRequest request) {
         String correo = credenciales.get("email");
         String password = credenciales.get("password");
-
         Map<String, Object> response = new HashMap<>();
 
-        Usuario usuario = usuarioService.findByCorreo(correo);
+        try {
+            UsernamePasswordAuthenticationToken authReq = new UsernamePasswordAuthenticationToken(correo, password);
+            Authentication auth = authenticationManager.authenticate(authReq);
 
-        if (usuario == null || !passwordEncoder.matches(password, usuario.getPassword())) {
+            SecurityContext sc = SecurityContextHolder.getContext();
+            sc.setAuthentication(auth);
+            HttpSession session = request.getSession(true);
+            session.setAttribute(HttpSessionSecurityContextRepository.SPRING_SECURITY_CONTEXT_KEY, sc);
+
+            Usuario usuario = usuarioService.findByCorreo(correo);
+            response.put("mensaje", "Login exitoso");
+            response.put("usuario", usuario);
+
+            return ResponseEntity.ok(response);
+
+        } catch (Exception e) {
             response.put("error", "Correo o contraseña incorrectos");
             return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(response);
         }
-
-        response.put("mensaje", "Login exitoso");
-        response.put("usuario", usuario);
-
-        return ResponseEntity.ok(response);
     }
 
     @PutMapping
