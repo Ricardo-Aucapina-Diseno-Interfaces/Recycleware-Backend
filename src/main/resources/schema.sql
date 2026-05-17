@@ -83,7 +83,7 @@ CREATE TABLE donaciones (
     descripcion TEXT NOT NULL,
     peso FLOAT NULL,
     PRIMARY KEY (id),
-    FOREIGN KEY (id_donante) REFERENCES usuarios(id),
+    FOREIGN KEY (id_donante) REFERENCES usuarios(id) ON DELETE CASCADE,
     FOREIGN KEY (id_estado) REFERENCES estados_donacion(id)
 );
 
@@ -95,7 +95,7 @@ CREATE TABLE solicitudes (
     id_estado INT NOT NULL DEFAULT 1,
     fecha_solicitud TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
     PRIMARY KEY (id),
-    FOREIGN KEY (id_solicitante) REFERENCES usuarios(id),
+    FOREIGN KEY (id_solicitante) REFERENCES usuarios(id) ON DELETE CASCADE,
     FOREIGN KEY (id_producto) REFERENCES productos(id),
     FOREIGN KEY (id_estado) REFERENCES estados_solicitud(id)
 );
@@ -108,7 +108,7 @@ CREATE TABLE mensajes_contacto (
     id_usuario INT NULL,
     fecha_envio TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
     PRIMARY KEY (id),
-    FOREIGN KEY (id_usuario) REFERENCES usuarios(id)
+    FOREIGN KEY (id_usuario) REFERENCES usuarios(id) ON DELETE CASCADE
 );
 
 CREATE TABLE resenas (
